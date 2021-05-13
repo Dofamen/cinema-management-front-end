@@ -14,8 +14,10 @@ export class CinemaComponent implements OnInit {
   public salles:any;
   public currentVille;
   public currentCinema;
+  private currentProjection: any;
+  private selectedTickets: any[];
 
-  constructor(private cinemaService:CinemaService) { }
+  constructor(public cinemaService:CinemaService) { }
 
   ngOnInit(): void {
       this.cinemaService.getVilles()
@@ -28,6 +30,8 @@ export class CinemaComponent implements OnInit {
 
   onGetCinemas(ville: any) {
     this.currentVille = ville;
+    this.currentCinema= undefined
+    this.salles = undefined;
     this.cinemaService.getCinemas(ville)
       .subscribe(data => {
         this.cinemas = data;
@@ -38,12 +42,36 @@ export class CinemaComponent implements OnInit {
 
   onGetSalles(cinema: any) {
     this.currentCinema = cinema;
+    this.currentProjection = undefined;
     this.cinemaService.getSalles(cinema)
       .subscribe(data => {
         this.salles = data;
+        this.salles._embedded.salles.forEach(salle =>{
+          this.cinemaService.getProjections(salle)
+            .subscribe(result =>{
+              salle.projections=result;
+            }, err =>{
+              console.log(err);
+            })
+        });
+      }, error => {
+        console.log(error);
+      });
+  }
+
+  onGetTickersPlaces(p: any) {
+    this.currentProjection = p;
+    this.cinemaService.getTicketsPlaces(p)
+      .subscribe(data => {
+       this.currentProjection.tickets = data;
       }, error => {
         console.log(error);
       });
 
+  }
+
+  onSelectTicket(ticket) {
+    ticket.selected = true;
+    this.selectedTickets.push(ticket);
   }
 }

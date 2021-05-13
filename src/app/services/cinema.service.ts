@@ -6,7 +6,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class CinemaService {
 
-  private host:String = "http://localhost:8080/"
+  public host:String = "http://localhost:8080/"
 
   constructor(private http:HttpClient) { }
 
@@ -20,5 +20,16 @@ export class CinemaService {
 
   getSalles(cinema: any) {
     return  this.http.get(cinema._links.salles.href);
+  }
+
+  getProjections(salle) {
+    //http://localhost:8080/projections/1?projection=f1
+    let url = salle._links.projections.href.replace("{?projection}", "");
+    return this.http.get(url+"?projection=f1");
+  }
+
+  getTicketsPlaces(p: any) {
+    let url = p._links.tickets.href.replace("{?projection}", "");
+    return this.http.get(url+"?projection=ticketProj");
   }
 }
