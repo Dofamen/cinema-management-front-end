@@ -74,4 +74,5 @@ export class CinemaComponent implements OnInit {
     ticket.selected = true;
     this.selectedTickets.push(ticket);
   }
+
 }
