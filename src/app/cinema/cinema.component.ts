@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {CinemaService} from '../services/cinema.service';
+import {tick} from '@angular/core/testing';
 
 @Component({
   selector: 'app-cinema',
@@ -14,8 +14,8 @@ export class CinemaComponent implements OnInit {
   public salles:any;
   public currentVille;
   public currentCinema;
-  private currentProjection: any;
-  private selectedTickets: any[];
+  public currentProjection: any;
+  public selectedTickets: any[] = [];
 
   constructor(public cinemaService:CinemaService) { }
 
@@ -70,8 +70,43 @@ export class CinemaComponent implements OnInit {
 
   }
 
-  onSelectTicket(ticket) {
-    ticket.selected = true;
-    this.selectedTickets.push(ticket);
+  onSelectTicket(t) {
+    if (!t.selected){
+      t.selected=true;
+      this.selectedTickets.push(t);
+    }else {
+      t.selected=false;
+      this.selectedTickets.splice(this.selectedTickets.indexOf(t), 1);
+    }
+
+  }
+
+  getTicketClass(t: any) {
+    let clas = "btn m-1 ";
+    if (t.selected){
+      clas+="btn-warning"
+    }else {
+      clas+="btn-outline-success"
+    }
+    return clas;
+  }
+
+  onPayTickets(dataForm) {
+    let ticket_id= [];
+    this.selectedTickets.forEach(v =>{
+      ticket_id.push(v.id);
+    });
+
+    dataForm.ticket_id = ticket_id;
+    this.cinemaService.payerTickets(dataForm)
+      .subscribe(data => {
+          alert('succeeded');
+          this.selectedTickets = [];
+          this.onGetTickersPlaces(this.currentProjection);
+        }
+        , error =>{
+        alert("Failed");
+      });
+
   }
 }

@@ -37,11 +37,25 @@
                       </div>
                       <div *ngIf="currentProjection" class="mt-4">
                         <div *ngIf="currentProjection.salle.name== salle.name">
-                          <div class="row" mt *ngIf="currentProjection.tickets">
+                          <div class="row" *ngIf="currentProjection.tickets">
                             <!--change the code here bugs in the future-->
-                            <a  (click)="onSelectTicket(t)" [ngClass]="t.reserve == true?'disable':'active'" class="btn btn-outline-success m-1" style="width: 45px; height: 40px; font-size: 15px" *ngFor="let t of currentProjection.tickets._embedded.tickets">
+                            <a  (click)="onSelectTicket(t)" [ngClass]="t.reserve == true?'disabled':'active'" class="{{getTicketClass(t)}}"  style="width: 45px; height: 40px; font-size: 15px" *ngFor="let t of currentProjection.tickets._embedded.tickets">
                               {{t.place.numero}}
                             </a>
+                          </div>
+                          <div *ngIf="selectedTickets.length > 0">
+                            <form #f="ngForm" (ngSubmit)="onPayTickets(f.value)">
+                              <div class="form-group">
+                                <label class="control-label">Nom Client: </label>
+                                <input class="form-control" type="text" name="clientName" ngModel>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="control-label">Code Payment: </label>
+                                <input class="form-control" type="text" name="codePayment" ngModel>
+                              </div>
+                              <button type="submit" class="btn btn-success mt-2">Submit</button>
+                            </form>
                           </div>
                         </div>
                       </div>
